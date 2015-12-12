@@ -1,7 +1,5 @@
 package io.mikael.demo;
 
-import com.google.common.collect.ImmutableList;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.apollo.broker.Broker;
 import org.apache.activemq.apollo.broker.store.leveldb.dto.*;
 import org.apache.activemq.apollo.dto.*;
@@ -9,6 +7,7 @@ import org.apache.activemq.apollo.dto.*;
 import java.io.File;
 
 import org.apache.activemq.apollo.stomp.dto.StompDTO;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.Lifecycle;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +15,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 @Service
-@Slf4j
 public class ApolloService implements Lifecycle {
+
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApolloService.class);
 
     private volatile boolean running = false;
 
@@ -39,13 +39,11 @@ public class ApolloService implements Lifecycle {
 
         final AcceptingConnectorDTO connector = new AcceptingConnectorDTO();
         connector.id = "ws";
-        connector.bind = "ws://0.0.0.0:61614";
+        connector.bind = "ws://0.0.0.0:61623?binary_transfers=false";
+        connector.protocol = "stomp";
         connector.protocols.add(new StompDTO());
-        broker.connectors.add(connector);
 
-        final WebAdminDTO webadmin = new WebAdminDTO();
-        webadmin.bind = "http://0.0.0.0:18080";
-        broker.web_admins.add(webadmin);
+        broker.connectors.add(connector);
 
         return broker;
     }
