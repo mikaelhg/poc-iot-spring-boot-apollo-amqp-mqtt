@@ -1,11 +1,13 @@
 package io.mikael.demo;
 
+import org.apache.activemq.apollo.amqp.dto.AmqpDTO;
 import org.apache.activemq.apollo.broker.Broker;
 import org.apache.activemq.apollo.broker.store.leveldb.dto.*;
 import org.apache.activemq.apollo.dto.*;
 
 import java.io.File;
 
+import org.apache.activemq.apollo.mqtt.dto.MqttDTO;
 import org.apache.activemq.apollo.stomp.dto.StompDTO;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.Lifecycle;
@@ -37,13 +39,26 @@ public class ApolloService implements Lifecycle {
 
         broker.virtual_hosts.add(host);
 
-        final AcceptingConnectorDTO connector = new AcceptingConnectorDTO();
-        connector.id = "ws";
-        connector.bind = "ws://0.0.0.0:61623?binary_transfers=false";
-        connector.protocol = "stomp";
-        connector.protocols.add(new StompDTO());
+        final AcceptingConnectorDTO stomp = new AcceptingConnectorDTO();
+        stomp.id = "ws";
+        stomp.bind = "ws://0.0.0.0:61623?binary_transfers=false";
+        stomp.protocol = "stomp";
+        stomp.protocols.add(new StompDTO());
+        broker.connectors.add(stomp);
 
-        broker.connectors.add(connector);
+        final AcceptingConnectorDTO amqp = new AcceptingConnectorDTO();
+        amqp.id = "amqp";
+        amqp.bind = "tcp://0.0.0.0:60100";
+        amqp.protocol = "amqp";
+        amqp.protocols.add(new AmqpDTO());
+        broker.connectors.add(amqp);
+
+        final AcceptingConnectorDTO mqtt = new AcceptingConnectorDTO();
+        mqtt.id = "mqtt";
+        mqtt.bind = "tcp://0.0.0.0:60200";
+        mqtt.protocol = "mqtt";
+        mqtt.protocols.add(new MqttDTO());
+        broker.connectors.add(mqtt);
 
         return broker;
     }
