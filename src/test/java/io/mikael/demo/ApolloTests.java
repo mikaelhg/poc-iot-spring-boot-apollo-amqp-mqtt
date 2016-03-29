@@ -12,7 +12,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class ApolloTests {
 
 	@Test
-	public void contextLoads() {
+	public void amqpSend() {
+
 	}
 
 }
